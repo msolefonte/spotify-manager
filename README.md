@@ -58,8 +58,9 @@ Still not available
 
 ## Reporting Issues
 
-If you have suggestions, bugs or other issues specific to this library, file them [here](https://github.com/WolfyLPDC/spotify-account/issues). Or just send me a pull request.
+If you have suggestions, bugs or other issues specific to this library, file them [here](https://github.com/WolfyLPDC/spotify-manager/issues). Or just send me a pull request.
 
 ## Version
 
 - 1.0 - 17/03/2018 - Initial release
+- 1.1 - 27/03/2018 - Added some new methods and revised the old ones
