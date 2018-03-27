@@ -76,7 +76,15 @@ https://spotipy.readthedocs.io/en/latest/#authorized-requests
 
 API Reference 
 ==============
-ON WORK
+.. automodule:: spotify_manager.spotify_manager
+    :members:
+    :undoc-members:
+    :special-members: __init__
+    :show-inheritance:
+
+Result Types
+==============
+On work
 
 Support
 =======
