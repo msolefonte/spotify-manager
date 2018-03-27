@@ -3,7 +3,16 @@ from spotipy import util
 
 
 class SpotifyManager:
-    def __init__(self, username, client_id, client_secret, redirect_uri='http://localhost:8888/callback', scope=None):
+    def __init__(self, username, client_id, client_secret, redirect_uri, scope=None):
+        """
+                Create a SpotifyManager object.
+
+                :param username: The Spotify Premium username
+                :param client_id: The client id of your app
+                :param client_secret: The client secret of your app
+                :param redirect_uri: The redirect URI of your app
+                :param scope: The desired scope of the request
+        """
         if not scope:
             scope = 'playlist-read-private playlist-read-collaborative streaming user-library-read ' \
                     'user-library-modify user-read-private user-top-read user-read-playback-state ' \
@@ -14,6 +23,19 @@ class SpotifyManager:
     # Player
 
     def play(self, context=None, uris=None, device=None):
+        """
+                Start or resume user’s playback.
+
+                Provide a context_uri to start playback or a album, artist, or playlist.
+
+                Provide a uris list to start playback of one or more tracks.
+
+                Don't use context and uris at the same time.
+
+                :param context: Album, artist, or playlist.
+                :param uris: List of one or more tracks.
+                :param device: The device target.
+        """
         try:
             self.sp.start_playback(device, context, uris)
         except SpotifyException as se:
@@ -22,6 +44,11 @@ class SpotifyManager:
                 raise
 
     def pause(self, device=None):
+        """
+                Pause user’s playback.
+
+                :param device: The device target.
+        """
         try:
             self.sp.pause_playback(device)
         except SpotifyException as se:
@@ -30,6 +57,11 @@ class SpotifyManager:
                 raise
 
     def play_pause(self, device=None):
+        """
+                Switch between Play and Pause.
+
+                :param device: The device target.
+        """
         try:
             self.sp.start_playback(device)
         except SpotifyException as se:
@@ -40,9 +72,21 @@ class SpotifyManager:
                 raise
 
     def next_track(self, device=None):
+        """
+                Moves to the next track.
+
+                :param device: The device target.
+        """
         self.sp.next_track(device)
 
     def previous_track(self, device=None):
+        """
+                Moves to the previous track.
+
+                Restart current track if there is no previous track.
+
+                :param device: The device target.
+        """
         try:
             self.sp.previous_track(device)
         except SpotifyException as se:
@@ -53,29 +97,68 @@ class SpotifyManager:
                 raise
 
     def repeat_track(self, device=None):
+        """
+                Restart current track.
+
+                :param device: The device target.
+        """
         self.sp.seek_track(0, device)
 
     def get_shuffle(self):
+        """
+                Returns the status of the shuffle mode.
+
+                Can be True or False (enabled or disabled).
+        """
         return self.sp.current_playback()['shuffle_state']
 
     def set_shuffle(self, state, device=None):
-        # STATE: True or False
+        """
+                Sets the status of the shuffle mode.
+
+                Can be True or False (enabled or disabled).
+
+                :param state: The new shuffle mode.
+
+                :param device: The device target.
+        """
         if state in [True, False]:
             self.sp.shuffle(state, device)
         else:
             raise AttributeError('State must be True or False')
 
     def get_repeat(self):
+        """
+                Returns the status of the repeat mode.
+
+                Can be track, context or off.
+        """
         return self.sp.current_playback()['repeat_state']
 
     def set_repeat(self, state, device=None):
-        # STATE: track, context, or off
+        """
+                Sets the status of the repeat mode.
+
+                Can be track, context or off.
+
+                :param state: The new repeat mode.
+
+                :param device: The device target.
+        """
         if state in ['track', 'context', 'off']:
             self.sp.repeat(state, device)
         else:
             raise AttributeError('State must be track, context or off')
 
     def get_volume(self, device=None):
+        """
+                Gets current device's volume in percentage.
+
+                If there is no device, returns the volume of the device
+                that is active right now.
+
+                :param device: The device target.
+        """
         if device:
             dev = self.get_device(device)
         else:
@@ -83,8 +166,15 @@ class SpotifyManager:
         return dev['volume_percent']
 
     def add_volume(self, volume_percent, device=None):
-        if not isinstance(volume_percent, int):
-            raise AttributeError('Volume must be an Integer')
+        """
+                Increases device's volume in percentage.
+
+                Also works with negative numbers.
+
+                :param volume_percent: The device target
+
+                :param device: The device target
+        """
         volume = self.get_volume(device) + volume_percent
         if volume > 100:
             volume = 100
@@ -93,7 +183,15 @@ class SpotifyManager:
         self.set_volume(volume, device)
 
     def set_volume(self, volume_percent, device=None):
-        # VOLUME: integer 0-100
+        """
+                Sets device's volume in percentage.
+
+                Also works with negative numbers.
+
+                :param volume_percent: The device target
+
+                :param device: The device target
+        """
         if 0 <= int(volume_percent) <= 100:
             self.sp.volume(int(volume_percent), device)
         else:

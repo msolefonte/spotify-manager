@@ -1,5 +1,5 @@
 Welcome to spotify-manager!
-===================================
+===========================
 *spotify-manager* is a lightweight Python3 library for the easy use and
 integration of `Spotipy <https://github.com/plamere/spotipy>`_ in your projects.
 As long as this library is only an upper leveled Spotipy, it still works with
@@ -66,7 +66,7 @@ Or with::
 Or you can get the source from github at https://github.com/WolfyLPDC/spotify-manager
 
 Authorized requests
-=======================
+===================
 As long as this is a library that uses Spotify's API you are going to need
 authentication to use it. How the problem are the same than with Spotipy, and
 I'm using that library, the best I can do is to link their docs to allow you
@@ -75,6 +75,8 @@ to read about this problem (feature).
 https://spotipy.readthedocs.io/en/latest/#authorized-requests
 
 API Reference 
+=============
+SpotifyManager
 ==============
 .. automodule:: spotify_manager.spotify_manager
     :members:
@@ -83,7 +85,7 @@ API Reference
     :show-inheritance:
 
 Result Types
-==============
+============
 Still on work
 
 Support
