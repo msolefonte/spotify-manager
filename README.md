@@ -61,7 +61,7 @@ sm.play_current_artist_related_tracks()
 
 ## Documentation
 
-Still not available
+https://spotify-manager.readthedocs.io/en/latest/
 
 ## Reporting Issues
 
