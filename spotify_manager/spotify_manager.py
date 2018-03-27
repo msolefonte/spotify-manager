@@ -3,7 +3,7 @@ from spotipy import util
 
 
 class SpotifyManager:
-    def __init__(self, username, client_id, client_secret, redirect_uri, scope=None):
+    def __init__(self, username, client_id, client_secret, redirect_uri='http://localhost:8888/callback', scope=None):
         if not scope:
             scope = 'playlist-read-private playlist-read-collaborative streaming user-library-read ' \
                     'user-library-modify user-read-private user-top-read user-read-playback-state ' \
