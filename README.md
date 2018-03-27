@@ -49,7 +49,7 @@ current_status = sm.get_current_status()
 print(current_status)
 >>> {'username': 'yourspotifyaccount', 'song': {'name': 'Eminem - Mockingbird', 'uri': 'spotify:track:17baAghWcrewNOcc9dCewx'}, 'artists': {'all': 'Eminem', 'main': {'name': 'Eminem', 'uri': 'spotify:artist:7dGJo4pcD2V6oG8kP0tJRR'}}, 'album': {'name': 'Curtain Call (Deluxe)', 'uri': 'spotify:album:71xFWYFtiHC8eP99QB30AA'}, 'playlist': {'is_active': False, 'uri': None}}
 sm.play_current_artist_related_tracks()
->>> My Band - D12 is now running on your device, followed by a list of another 49 related songs (customizable)
+# My Band - D12 is now running on your device, followed by a list of another 49 related songs (customizable)
 ```
 
 ## Documentation
