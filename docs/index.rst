@@ -1,9 +1,9 @@
 Welcome to spotify-manager!
 ===================================
 *spotify-manager* is a lightweight Python3 library for the easy use and
-integration of `Spotipy<https://github.com/plamere/spotipy>`_ in your projects.
+integration of `Spotipy <https://github.com/plamere/spotipy>`_ in your projects.
 As long as this library is only an upper leveled Spotipy, it still works with
-the `Spotify Web API<https://developer.spotify.com/web-api/>`_ and your are
+the `Spotify Web API <https://developer.spotify.com/web-api/>`_ and your are
 going to need Spotify Premium and an API Token.
 
 The spirit of spotify-manager is to automatize some requests related with the
@@ -37,15 +37,15 @@ listening to right now a twenty percent::
     sm.add_volume(20)
 
 As you can see, it's pretty simple to use this library and it's more upper
-leveled than `Spotipy<https://github.com/plamere/spotipy>`_, so you don't
+leveled than `Spotipy <https://github.com/plamere/spotipy>`_, so you don't
 have to focus that much on the implementation.
 
 Features
 ========
 *spotify-manager* is a lightweight Python3 library for the easy use and
-integration of `Spotipy<https://github.com/plamere/spotipy>`_ in your projects.
+integration of `Spotipy <https://github.com/plamere/spotipy>`_ in your projects.
 As long as this library is only an upper leveled Spotipy, it still works with
-the `Spotify Web API<https://developer.spotify.com/web-api/>`_ and your are
+the `Spotify Web API <https://developer.spotify.com/web-api/>`_ and your are
 going to need Spotify Premium and an API Token.
 
 The spirit of spotify-manager is to automatize some requests related with the
