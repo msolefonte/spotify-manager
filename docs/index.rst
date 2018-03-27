@@ -68,9 +68,9 @@ Or you can get the source from github at https://github.com/WolfyLPDC/spotify-ma
 Authorized requests
 =======================
 As long as this is a library that uses Spotify's API you are going to need
-authentication to use it. How the problem is the same than with Spotipy, and
-I'm using their library, the best I can do is to link their docs to allow you
-to read about this problem.
+authentication to use it. How the problem are the same than with Spotipy, and
+I'm using that library, the best I can do is to link their docs to allow you
+to read about this problem (feature).
 
 https://spotipy.readthedocs.io/en/latest/#authorized-requests
 
@@ -78,20 +78,10 @@ API Reference
 ==============
 ON WORK
 
-:mod:`client` Module
-=======================
-
-.. automodule:: spotipy.client
-    :members:
-    :undoc-members:
-    :special-members: __init__
-    :show-inheritance:
-
-
 Support
 =======
 If you have questions about spotify-manager, you can mail me to my account
-'marcsole @ insomniacwolves.com' and I will try to answer as soon as possible.
+*'marcsole @ insomniacwolves.com'* and I will try to answer as soon as possible.
 
 If you think you've found a bug, let me know at
 `spotify-manager <https://github.com/WolfyLPDC/spotify-manager/issues>`_
