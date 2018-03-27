@@ -76,8 +76,8 @@ https://spotipy.readthedocs.io/en/latest/#authorized-requests
 
 API Reference 
 =============
-SpotifyManager
-==============
+:mod:`spotify_manager` Module
+=============================
 .. automodule:: spotify_manager.spotify_manager
     :members:
     :undoc-members:
