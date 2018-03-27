@@ -1,4 +1,4 @@
-# spotify-manager
+# spotify-manager (ON WORK, STILL NOT AVAILABLE AT PYPI)
 
 ## Description
 
