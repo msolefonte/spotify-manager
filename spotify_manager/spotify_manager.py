@@ -202,7 +202,7 @@ class SpotifyManager:
         """
                 Search list of tracks that match the query.
 
-                Returns -> {'tracks':[{name, artists, album, uri}, ... ]}
+                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
 
                 :param query: The search query
 
@@ -221,7 +221,7 @@ class SpotifyManager:
         """
                 Search list of artists that match the query.
 
-                Returns -> {'artists': [{name, uri}, ... ]}
+                Result -> {'artists': [{name, uri}, ... ]}
 
                 :param query: The search query
 
@@ -236,7 +236,7 @@ class SpotifyManager:
         """
                 Search list of albums that match the query.
 
-                Returns -> {'albums': [name, artists, uri], ... }
+                Result -> {'albums': [name, artists, uri], ... }
 
                 :param query: The search query
 
@@ -254,7 +254,7 @@ class SpotifyManager:
         """
                 Search list of playlists that match the query.
 
-                Returns -> {'playlists': [name, uri], ... }
+                Result -> {'playlists': [name, uri], ... }
 
                 :param query: The search query
 
@@ -267,8 +267,16 @@ class SpotifyManager:
 
     # Get data
     def get_current_status(self):
-        # returns dict -> {username, song: {name, uri}, artists: {all, main, main_uri}, album: {name, uri},
-        # playlist: {is_active, uri}}
+        """
+                Return the status of the current user.
+
+                Includes username, track, artists, album and playlist.
+
+                Result -> {username, track: {name, uri}, artists: {all, main, main_uri}, album: {name, uri},
+                           playlist: {is_active, uri}}
+
+                Raises ConnectionError if user is not connected.
+        """
         status = self.sp.currently_playing()
         if not status:
             raise ConnectionError('User not connected to Spotify ')
@@ -286,20 +294,30 @@ class SpotifyManager:
         if status['context'] and status['context']['type'] == 'playlist':
             playlist_active = True
             playlist_uri = status['context']['uri']
-        return {'username': self.sp.current_user()['id'], 'song': {'name': owners_string[:-2] + ' - ' +
+        return {'username': self.sp.current_user()['id'], 'track': {'name': owners_string[:-2] + ' - ' +
                 song['name'], 'uri': song['uri']}, 'artists': {'all': artists_string[:-2],
                 'main': {'name': main_artist['name'], 'uri': main_artist['uri']}}, 'album': {'name': album['name'],
                 'uri': album['uri']}, 'playlist': {'is_active': playlist_active, 'uri': playlist_uri}}
 
     def get_playlists(self):
-        # returns dict -> {'playlists': [name, uri], ... }
+        """
+                Returns list of user playlists
+
+                Result -> {'playlists': [name, uri], ... }
+        """
         playlists = {'playlists': []}
         for p in self.sp.current_user_playlists()['items']:
             playlists['playlists'].append([p['name'], p['uri']])
         return playlists
 
     def get_recently_played(self, limit=50):
-        # returns dict -> {'tracks':[{name, artists, album, uri}, ... ]}
+        """
+                Returns list of tracks recently played by the current user.
+
+                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
+
+                :param limit: Number of results to show
+        """
         tracks = {'tracks': []}
         for item in self.sp.current_user_recently_played(limit)['items']:
             track = item['track']
@@ -321,7 +339,15 @@ class SpotifyManager:
         return albums
 
     def get_saved_tracks(self, limit=20, offset=0):
-        # returns dict -> {'tracks':[{name, artists, album, uri}, ... ]}
+        """
+                Returns list of tracks saved by the current user.
+
+                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
+
+                :param limit: Number of results to show
+
+                :param offset: Index of the first item to return
+        """
         tracks = {'tracks': []}
         for track in self.sp.current_user_saved_tracks(limit, offset)['items']:
             artists_string = ''
@@ -339,7 +365,13 @@ class SpotifyManager:
         return artists
 
     def get_user_top_tracks(self, limit=10):
-        # returns dict -> {'tracks':[{name, artists, album, uri}, ... ]}
+        """
+                Returns list of tracks more played by the current user.
+
+                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
+
+                :param limit: Number of results to show
+        """
         tracks = {'tracks': []}
         for track in self.sp.current_user_top_tracks(limit)['items']:
             artists_string = ''
@@ -362,7 +394,19 @@ class SpotifyManager:
         return tracks
 
     def get_related_artist_tracks(self, artist_uri, max_artists=5, tracks_per_artist=5):
-        # returns dict -> {'tracks':[{name, artists, album, uri}, ... ]}
+        """
+                Returns list of tracks related to an artist.
+
+                It search the top songs of some related artists.
+
+                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
+
+                :param artist_uri: ID of the artist.
+
+                :param max_artists: Number of related artists to show.
+
+                :param tracks_per_artist: Number of tracks per artist to show.
+        """
         tracks = {'tracks': []}
         artists_found = 0
         for artist in self.sp.artist_related_artists(artist_uri)['artists']:
@@ -381,24 +425,54 @@ class SpotifyManager:
 
     # Set data
     def save_tracks(self, tracks=None):
+        """
+                Saves one or more tracks on the current user's library
+
+            T   Tracks is a list similar to [track1.uri, track2.uri, ... ]
+
+                :param tracks: List of uri's tracks to save
+        """
         self.sp.current_user_saved_tracks_add(tracks)
 
     def delete_tracks(self, tracks=None):
+        """
+                Deletes one or more tracks from the current user's library
+
+            T   Tracks is a list similar to [track1.uri, track2.uri, ... ]
+
+                :param tracks: List of uri's tracks to delete
+        """
         self.sp.current_user_saved_tracks_delete(tracks)
 
     def save_albums(self, albums=None):
+        """
+                Saves one or more albums on the current user's library
+
+            T   Tracks is a list similar to [album1.uri, album2.uri, ... ]
+
+                :param albums: List of uri's albums to save
+        """
         if albums is None:
             albums = []
         self.sp.current_user_saved_albums_add(albums)
 
     # Use data
     def save_current_track(self):
-        self.save_tracks([self.get_current_status()['song']['uri']])
+        """
+            Saves the track that the current user is playing on it's library
+        """
+        self.save_tracks([self.get_current_status()['track']['uri']])
 
     def delete_current_track(self):
-        self.delete_tracks([self.get_current_status()['song']['uri']])
+        """
+            Deletes the track that the current user is playing from it's library
+        """
+        self.delete_tracks([self.get_current_status()['track']['uri']])
 
     def save_current_album(self):
+        """
+            Saves the album that the current user is playing on it's library
+        """
         self.save_albums([self.get_current_status()['album']['uri']])
 
     def play_user_top_artists(self, artists=10, tracks_per_artists=5, shuffle=True, device=None):
