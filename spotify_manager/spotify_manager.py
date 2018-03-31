@@ -199,7 +199,15 @@ class SpotifyManager:
 
     # Search
     def search_track(self, query, limit=10):
-        # returns dict -> {'tracks':[{name, artists, album, uri}, ... ]}
+        """
+                Search list of tracks that match the query.
+
+                Returns -> {'tracks':[{name, artists, album, uri}, ... ]}
+
+                :param query: The search query
+
+                :param limit: Number of results to show
+        """
         tracks = {'tracks': []}
         for result in self.sp.search(query, limit, type='track')['tracks']['items']:
             artists_string = ''
@@ -210,14 +218,30 @@ class SpotifyManager:
         return tracks
 
     def search_artist(self, query, limit=10):
-        # returns dict -> {'artists': [{name, uri}, ... ]}
+        """
+                Search list of artists that match the query.
+
+                Returns -> {'artists': [{name, uri}, ... ]}
+
+                :param query: The search query
+
+                :param limit: Number of results to show
+        """
         artists = {'artists': []}
         for artist in self.sp.search(query, limit, type='artist')['artists']['items']:
             artists['artists'].append([artist['name'], artist['uri']])
         return artists
 
     def search_album(self, query, limit=10):
-        # returns dict -> {'albums': [name, artists, uri], ... }
+        """
+                Search list of albums that match the query.
+
+                Returns -> {'albums': [name, artists, uri], ... }
+
+                :param query: The search query
+
+                :param limit: Number of results to show
+        """
         albums = {'albums': []}
         for album in self.sp.search(query, limit, type='album')['albums']['items']:
             artists_string = ''
@@ -227,7 +251,15 @@ class SpotifyManager:
         return albums
 
     def search_playlist(self, query, limit=10):
-        # returns dict -> {'playlists': [name, uri], ... }
+        """
+                Search list of playlists that match the query.
+
+                Returns -> {'playlists': [name, uri], ... }
+
+                :param query: The search query
+
+                :param limit: Number of results to show
+        """
         playlists = {'playlists': []}
         for p in self.sp.search(query, limit, type='playlist')['playlists']['items']:
             playlists['playlists'].append([p['name'], p['uri']])
@@ -405,18 +437,30 @@ class SpotifyManager:
 
     # Devices
     def get_available_devices(self):
-        # returns dict -> {'devices': [{name, id}, ... ]}
+        """
+                Returns a dict of all the devices available of the current user.
+
+                Result -> {'devices': [{name, id}, ... ]}
+        """
         devices = {'devices': []}
         for dev in self.sp.devices()['devices']:
             devices['devices'].append([dev['name'].capitalize(), dev['id']])
         return devices
 
     def get_active_device(self):
+        """
+                Returns device dict (see Spotipy docs) from the active device.
+        """
         for dev in self.sp.devices()['devices']:
             if dev['is_active']:
                 return dev
 
-    def get_device(self, device):
+    def get_device(self, device_id):
+        """
+                Returns device dict (see Spotipy docs) from a device ID.
+
+                :param device_id: The device target identifier
+        """
         for dev in self.sp.devices()['devices']:
-            if dev['id'] == device:
+            if dev['id'] == device_id:
                 return dev
