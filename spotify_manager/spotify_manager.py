@@ -426,31 +426,31 @@ class SpotifyManager:
     # Set data
     def save_tracks(self, tracks=None):
         """
-                Saves one or more tracks on the current user's library
+            Saves one or more tracks on the current user's library
 
-            T   Tracks is a list similar to [track1.uri, track2.uri, ... ]
+            Tracks is a list similar to [track1.uri, track2.uri, ... ]
 
-                :param tracks: List of uri's tracks to save
+            :param tracks: List of uri's tracks to save
         """
         self.sp.current_user_saved_tracks_add(tracks)
 
     def delete_tracks(self, tracks=None):
         """
-                Deletes one or more tracks from the current user's library
+            Deletes one or more tracks from the current user's library
 
-            T   Tracks is a list similar to [track1.uri, track2.uri, ... ]
+            Tracks is a list similar to [track1.uri, track2.uri, ... ]
 
-                :param tracks: List of uri's tracks to delete
+            :param tracks: List of uri's tracks to delete
         """
         self.sp.current_user_saved_tracks_delete(tracks)
 
     def save_albums(self, albums=None):
         """
-                Saves one or more albums on the current user's library
+            Saves one or more albums on the current user's library
 
-            T   Tracks is a list similar to [album1.uri, album2.uri, ... ]
+            Tracks is a list similar to [album1.uri, album2.uri, ... ]
 
-                :param albums: List of uri's albums to save
+            :param albums: List of uri's albums to save
         """
         if albums is None:
             albums = []
