@@ -89,10 +89,6 @@ API Reference
     :special-members: __init__
     :show-inheritance:
 
-Result Types
-============
-On work
-
 Support
 =======
 If you have questions about spotify-manager, you can mail me to my account
