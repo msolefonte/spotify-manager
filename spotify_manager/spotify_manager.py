@@ -268,14 +268,15 @@ class SpotifyManager:
     # Get data
     def get_current_status(self):
         """
+
                 Return the status of the current user.
 
                 Includes username, track, artists, album and playlist.
 
-                Result -> {username, track: {name, uri}, artists: {all, main, main_uri}, album: {name, uri},
+                :return: {username, track: {name, uri}, artists: {all, main, main_uri}, album: {name, uri},
                            playlist: {is_active, uri}}
-
-                Raises ConnectionError if user is not connected.
+                :rtype: dict
+                :raises ConnectionError: If user is not connected to Spotify
         """
         status = self.sp.currently_playing()
         if not status:
