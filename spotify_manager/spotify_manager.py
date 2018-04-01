@@ -22,7 +22,7 @@ class SpotifyManager:
 
     # Player
 
-    def play(self, context=None, uris=None, device=None):
+    def play(self, context=None, uris=None, device_id=None):
         """
                 Start or resume user’s playback.
 
@@ -34,75 +34,75 @@ class SpotifyManager:
 
                 :param context: Album, artist, or playlist.
                 :param uris: List of one or more tracks.
-                :param device: The device target.
+                :param device_id: The device target.
         """
         try:
-            self.sp.start_playback(device, context, uris)
+            self.sp.start_playback(device_id, context, uris)
         except SpotifyException as se:
             # Err 403 - Not paused
             if se.http_status != 403:
                 raise
 
-    def pause(self, device=None):
+    def pause(self, device_id=None):
         """
                 Pause user’s playback.
 
-                :param device: The device target.
+                :param device_id: The device target.
         """
         try:
-            self.sp.pause_playback(device)
+            self.sp.pause_playback(device_id)
         except SpotifyException as se:
             # Err 403 - Already paused
             if se.http_status != 403:
                 raise
 
-    def play_pause(self, device=None):
+    def play_pause(self, device_id=None):
         """
                 Switch between Play and Pause.
 
-                :param device: The device target.
+                :param device_id: The device target.
         """
         try:
-            self.sp.start_playback(device)
+            self.sp.start_playback(device_id)
         except SpotifyException as se:
             # Err 403 - Not paused
             if se.http_status == 403:
-                self.sp.pause_playback(device)
+                self.sp.pause_playback(device_id)
             else:
                 raise
 
-    def next_track(self, device=None):
+    def next_track(self, device_id=None):
         """
                 Moves to the next track.
 
-                :param device: The device target.
+                :param device_id: The device target.
         """
-        self.sp.next_track(device)
+        self.sp.next_track(device_id)
 
-    def previous_track(self, device=None):
+    def previous_track(self, device_id=None):
         """
                 Moves to the previous track.
 
                 Restart current track if there is no previous track.
 
-                :param device: The device target.
+                :param device_id: The device target.
         """
         try:
-            self.sp.previous_track(device)
+            self.sp.previous_track(device_id)
         except SpotifyException as se:
             # Err 403 - No previous track
             if se.http_status == 403:
-                self.repeat_track(device)
+                self.repeat_track(device_id)
             else:
                 raise
 
-    def repeat_track(self, device=None):
+    def repeat_track(self, device_id=None):
         """
                 Restart current track.
 
-                :param device: The device target.
+                :param device_id: The device target.
         """
-        self.sp.seek_track(0, device)
+        self.sp.seek_track(0, device_id)
 
     def get_shuffle(self):
         """
@@ -112,7 +112,7 @@ class SpotifyManager:
         """
         return self.sp.current_playback()['shuffle_state']
 
-    def set_shuffle(self, state, device=None):
+    def set_shuffle(self, state, device_id=None):
         """
                 Sets the status of the shuffle mode.
 
@@ -120,10 +120,10 @@ class SpotifyManager:
 
                 :param state: The new shuffle mode.
 
-                :param device: The device target.
+                :param device_id: The device target.
         """
         if state in [True, False]:
-            self.sp.shuffle(state, device)
+            self.sp.shuffle(state, device_id)
         else:
             raise AttributeError('State must be True or False')
 
@@ -135,7 +135,7 @@ class SpotifyManager:
         """
         return self.sp.current_playback()['repeat_state']
 
-    def set_repeat(self, state, device=None):
+    def set_repeat(self, state, device_id=None):
         """
                 Sets the status of the repeat mode.
 
@@ -143,57 +143,57 @@ class SpotifyManager:
 
                 :param state: The new repeat mode.
 
-                :param device: The device target.
+                :param device_id: The device target.
         """
         if state in ['track', 'context', 'off']:
-            self.sp.repeat(state, device)
+            self.sp.repeat(state, device_id)
         else:
             raise AttributeError('State must be track, context or off')
 
-    def get_volume(self, device=None):
+    def get_volume(self, device_id=None):
         """
                 Gets current device's volume in percentage.
 
                 If there is no device, returns the volume of the device
                 that is active right now.
 
-                :param device: The device target.
+                :param device_id: The device target.
         """
-        if device:
-            dev = self.get_device(device)
+        if device_id:
+            dev = self.get_device(device_id)
         else:
             dev = self.get_active_device()
         return dev['volume_percent']
 
-    def add_volume(self, volume_percent, device=None):
+    def add_volume(self, volume_percent, device_id=None):
         """
                 Increases device's volume in percentage.
 
                 Also works with negative numbers.
 
-                :param volume_percent: The device target
+                :param volume_percent: The volume percentage to increase or decrease
 
-                :param device: The device target
+                :param device_id: The device target
         """
-        volume = self.get_volume(device) + volume_percent
+        volume = self.get_volume(device_id) + volume_percent
         if volume > 100:
             volume = 100
         elif volume < 0:
             volume = 0
-        self.set_volume(volume, device)
+        self.set_volume(volume, device_id)
 
-    def set_volume(self, volume_percent, device=None):
+    def set_volume(self, volume_percent, device_id=None):
         """
                 Sets device's volume in percentage.
 
                 Also works with negative numbers.
 
-                :param volume_percent: The device target
+                :param volume_percent: The volume percentage to set
 
-                :param device: The device target
+                :param device_id: The device target
         """
         if 0 <= int(volume_percent) <= 100:
-            self.sp.volume(int(volume_percent), device)
+            self.sp.volume(int(volume_percent), device_id)
         else:
             raise AttributeError('Volume must be an Integer between 0 and 100')
 
@@ -475,38 +475,38 @@ class SpotifyManager:
         """
         self.save_albums([self.get_current_status()['album']['uri']])
 
-    def play_user_top_artists(self, artists=10, tracks_per_artists=5, shuffle=True, device=None):
-        self.pause(device)
+    def play_user_top_artists(self, artists=10, tracks_per_artists=5, shuffle=True, device_id=None):
+        self.pause(device_id)
         tracks = []
         for artist in self.get_user_top_artists(artists)['artists']:
             for track in self.get_artist_top_tracks(artist['uri'], tracks_per_artists)['tracks']:
                 tracks.append(track['uri'])
-        self.play(uris=tracks, device=device)
+        self.play(uris=tracks, device_id=device_id)
         self.set_shuffle(shuffle)
 
-    def play_user_top_tracks(self, limit=10, shuffle=True, device=None):
-        self.pause(device)
+    def play_user_top_tracks(self, limit=10, shuffle=True, device_id=None):
+        self.pause(device_id)
         tracks = []
         for track in self.get_user_top_tracks(limit)['tracks']:
             tracks.append(track['uri'])
-        self.play(uris=tracks, device=device)
+        self.play(uris=tracks, device_id=device_id)
         self.set_shuffle(shuffle)
 
-    def play_recently_played(self, limit=50, shuffle=True, device=None):
-        self.pause(device)
+    def play_recently_played(self, limit=50, shuffle=True, device_id=None):
+        self.pause(device_id)
         tracks = []
         for track in self.get_recently_played(limit)['tracks']:
             tracks.append(track['uri'])
-        self.play(uris=tracks, device=device)
+        self.play(uris=tracks, device_id=device_id)
         self.set_shuffle(shuffle)
 
-    def play_current_artist_related_tracks(self, max_artists=5, tracks_per_artist=5, shuffle=True, device=None):
-        self.pause(device)
+    def play_current_artist_related_tracks(self, max_artists=5, tracks_per_artist=5, shuffle=True, device_id=None):
+        self.pause(device_id)
         artist_uri = self.get_current_status()['artists']['main']['uri']
         tracks = []
         for track in self.get_related_artist_tracks(artist_uri, max_artists, tracks_per_artist)['tracks']:
             tracks.append(track['uri'])
-        self.play(uris=tracks, device=device)
+        self.play(uris=tracks, device_id=device_id)
         self.set_shuffle(shuffle)
 
     # Devices
