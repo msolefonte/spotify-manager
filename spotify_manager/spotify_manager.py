@@ -108,7 +108,7 @@ class SpotifyManager:
         """
                 Returns the status of the shuffle mode.
 
-                Can be True or False (enabled or disabled).
+                :return: Can be True or False (enabled or disabled).
         """
         return self.sp.current_playback()['shuffle_state']
 
@@ -131,7 +131,7 @@ class SpotifyManager:
         """
                 Returns the status of the repeat mode.
 
-                Can be track, context or off.
+                :return: Can be track, context or off.
         """
         return self.sp.current_playback()['repeat_state']
 
@@ -270,8 +270,6 @@ class SpotifyManager:
         """
 
                 Return the status of the current user.
-
-                Includes username, track, artists, album and playlist.
 
                 :return: {username, track: {name, uri}, artists: {all, main, main_uri}, album: {name, uri},
                            playlist: {is_active, uri}}
