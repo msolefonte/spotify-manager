@@ -78,7 +78,6 @@ API Reference
 =============
 :mod:`spotify_manager` Module
 =============================
-On work
 .. automodule:: spotify_manager.spotify_manager
     :members:
     :undoc-members:

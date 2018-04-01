@@ -10,7 +10,15 @@ Welcome to spotify-manager's documentation!
    :maxdepth: 2
    :caption: Contents:
 
-
+API Reference
+=============
+:mod:`spotify_manager` Module
+=============================
+.. automodule:: spotify_manager.spotify_manager
+    :members:
+    :undoc-members:
+    :special-members: __init__
+    :show-inheritance:
 
 Indices and tables
 ==================
