@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 #
 # spotify-manager documentation build configuration file, created by
-# sphinx-quickstart on Sun Apr  1 12:34:25 2018.
+# sphinx-quickstart on Sun Apr  1 12:44:39 2018.
 #
 # This file is execfile()d with the current directory set to its
 # containing dir.
@@ -31,7 +31,7 @@
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = []
+extensions = ['sphinx.ext.autodoc']
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -43,7 +43,7 @@ templates_path = ['_templates']
 source_suffix = '.rst'
 
 # The master toctree document.
-master_doc = 'ind'
+master_doc = 'index'
 
 # General information about the project.
 project = 'spotify-manager'
@@ -153,26 +153,5 @@ texinfo_documents = [
      'Miscellaneous'),
 ]
 
-
-
-# -- Options for Epub output ----------------------------------------------
-
-# Bibliographic Dublin Core info.
-epub_title = project
-epub_author = author
-epub_publisher = author
-epub_copyright = copyright
-
-# The unique identifier of the text. This can be a ISBN number
-# or the project homepage.
-#
-# epub_identifier = ''
-
-# A unique identification for the text.
-#
-# epub_uid = ''
-
-# A list of files that should not be packed into the epub file.
-epub_exclude_files = ['search.html']
 
 
