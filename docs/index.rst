@@ -72,7 +72,7 @@ Or you can get the source from github at https://github.com/WolfyLPDC/spotify-ma
 Authorized requests
 ===================
 As long as this is a library that uses Spotify's API you are going to need
-authentication to use it. How the problem are the same than with Spotipy, and
+authentication to use it. Because it has the same problems than Spotipy, and
 I'm using that library, the best I can do is to link their docs to allow you
 to read about this problem (feature).
 
