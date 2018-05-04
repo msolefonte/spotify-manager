@@ -13,8 +13,8 @@ going to need Spotify Premium and an API Token.
 
 The spirit of spotify-manager is to automatize some requests related with the
 streaming, but not all of them. Searching data or updating your profile is less
-important for this library than play your fifty last tracks again or repeat a
-song. I just focused on the things I find more important and util.
+important for this library than playing your fifty last tracks again or repeat a
+song. I just focused on the things I find more important and useful.
 
 Here's a quick example of using *spotify-manager* to search and play a track
 like for example 'Mockingbird' by 'Eminem'::
