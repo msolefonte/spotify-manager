@@ -90,7 +90,7 @@ API Reference
 
 Support
 =======
-If you have questions about spotify-manager, you can mail me to my account
+If you any have questions about spotify-manager, you can mail me to my account
 *'marcsole @ insomniacwolves.com'* and I will try to answer as soon as possible.
 
 If you think you've found a bug, let me know at
