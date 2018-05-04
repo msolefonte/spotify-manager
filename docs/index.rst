@@ -99,9 +99,10 @@ If you think you've found a bug, let me know at
 
 Contribute
 ==========
-spotify-manager authored by Marc Solé (WolfyLPDC) with special thanks to
-Paul Lamere (plamere), the author of the great library Spotipy, and to all
-the people that have contributed to make this possible.
+https://github.com/Wolfy
+spotify-manager authored by Marc Solé (`WolfyLPDC <https://github.com/WolfyLPDC/>`_)
+with special thanks to Paul Lamere (`plamere <https://github.com/plamere/>`_),
+the author of the great library Spotipy, and to all the people that have contributed to make this possible.
 
 License
 =======
