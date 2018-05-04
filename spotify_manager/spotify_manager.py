@@ -3,178 +3,34 @@ from spotipy import util
 
 
 class SpotifyManager:
-    def __init__(self, username, client_id, client_secret, redirect_uri, scope=None):
+    def __init__(self, username, client_id, client_secret, redirect_uri):
         """
-                Create a SpotifyManager object.
+            Create a SpotifyManager object.
 
-                :param username: The Spotify Premium username
-                :param client_id: The client id of your app
-                :param client_secret: The client secret of your app
-                :param redirect_uri: The redirect URI of your app
-                :param scope: The desired scope of the request
+            :param username: The Spotify Premium username.
+            :param client_id: The client id of your app.
+            :param client_secret: The client secret of your app.
+            :param redirect_uri: The redirect URI of your app.
         """
-        if not scope:
-            scope = 'playlist-read-private playlist-read-collaborative streaming user-library-read ' \
-                    'user-library-modify user-read-private user-top-read user-read-playback-state ' \
-                    'user-modify-playback-state user-read-currently-playing user-read-recently-played'
+        scope = 'playlist-read-private playlist-read-collaborative streaming user-library-read ' \
+                'user-library-modify user-read-private user-top-read user-read-playback-state ' \
+                'user-modify-playback-state user-read-currently-playing user-read-recently-played'
         token = util.prompt_for_user_token(username, scope, client_id, client_secret, redirect_uri)
         self.sp = Spotify(auth=token)
 
-    # Player
+    # Volume
 
-    def play(self, context=None, uris=None, device_id=None):
+    def increase_volume(self, volume_percent, device_id=None):
         """
-                Start or resume user’s playback.
+            Increases device's volume in percentage.
 
-                Provide a context_uri to start playback or a album, artist, or playlist.
-
-                Provide a uris list to start playback of one or more tracks.
-
-                Don't use context and uris at the same time.
-
-                :param context: Album, artist, or playlist.
-                :param uris: List of one or more tracks.
-                :param device_id: The device target.
+            :param volume_percent: Volume percentage to increase. Negative to decrease.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
+            :raises TypeError: volume_percent is not an integer.
         """
-        try:
-            self.sp.start_playback(device_id, context, uris)
-        except SpotifyException as se:
-            # Err 403 - Not paused
-            if se.http_status != 403:
-                raise
-
-    def pause(self, device_id=None):
-        """
-                Pause user’s playback.
-
-                :param device_id: The device target.
-        """
-        try:
-            self.sp.pause_playback(device_id)
-        except SpotifyException as se:
-            # Err 403 - Already paused
-            if se.http_status != 403:
-                raise
-
-    def play_pause(self, device_id=None):
-        """
-                Switch between Play and Pause.
-
-                :param device_id: The device target.
-        """
-        try:
-            self.sp.start_playback(device_id)
-        except SpotifyException as se:
-            # Err 403 - Not paused
-            if se.http_status == 403:
-                self.sp.pause_playback(device_id)
-            else:
-                raise
-
-    def next_track(self, device_id=None):
-        """
-                Moves to the next track.
-
-                :param device_id: The device target.
-        """
-        self.sp.next_track(device_id)
-
-    def previous_track(self, device_id=None):
-        """
-                Moves to the previous track.
-
-                Restart current track if there is no previous track.
-
-                :param device_id: The device target.
-        """
-        try:
-            self.sp.previous_track(device_id)
-        except SpotifyException as se:
-            # Err 403 - No previous track
-            if se.http_status == 403:
-                self.repeat_track(device_id)
-            else:
-                raise
-
-    def repeat_track(self, device_id=None):
-        """
-                Restart current track.
-
-                :param device_id: The device target.
-        """
-        self.sp.seek_track(0, device_id)
-
-    def get_shuffle(self):
-        """
-                Returns the status of the shuffle mode.
-
-                :return: Can be True or False (enabled or disabled).
-        """
-        return self.sp.current_playback()['shuffle_state']
-
-    def set_shuffle(self, state, device_id=None):
-        """
-                Sets the status of the shuffle mode.
-
-                Can be True or False (enabled or disabled).
-
-                :param state: The new shuffle mode.
-
-                :param device_id: The device target.
-        """
-        if state in [True, False]:
-            self.sp.shuffle(state, device_id)
-        else:
-            raise AttributeError('State must be True or False')
-
-    def get_repeat(self):
-        """
-                Returns the status of the repeat mode.
-
-                :return: Can be track, context or off.
-        """
-        return self.sp.current_playback()['repeat_state']
-
-    def set_repeat(self, state, device_id=None):
-        """
-                Sets the status of the repeat mode.
-
-                Can be track, context or off.
-
-                :param state: The new repeat mode.
-
-                :param device_id: The device target.
-        """
-        if state in ['track', 'context', 'off']:
-            self.sp.repeat(state, device_id)
-        else:
-            raise AttributeError('State must be track, context or off')
-
-    def get_volume(self, device_id=None):
-        """
-                Gets current device's volume in percentage.
-
-                If there is no device, returns the volume of the device
-                that is active right now.
-
-                :param device_id: The device target.
-        """
-        if device_id:
-            dev = self.get_device(device_id)
-        else:
-            dev = self.get_active_device()
-        return dev['volume_percent']
-
-    def add_volume(self, volume_percent, device_id=None):
-        """
-                Increases device's volume in percentage.
-
-                Also works with negative numbers.
-
-                :param volume_percent: The volume percentage to increase or decrease
-
-                :param device_id: The device target
-        """
+        if not isinstance(volume_percent, int):
+            raise TypeError('volume_percent is not an integer')
         volume = self.get_volume(device_id) + volume_percent
         if volume > 100:
             volume = 100
@@ -182,358 +38,651 @@ class SpotifyManager:
             volume = 0
         self.set_volume(volume, device_id)
 
+    def decrease_volume(self, volume_percent, device_id=None):
+        """
+            Decreases device's volume in percentage.
+
+            :param volume_percent: Volume percentage to decrease. Negative to increase.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
+            :raises TypeError: volume_percent is not an integer.
+        """
+        if not isinstance(volume_percent, int):
+            raise TypeError('volume_percent is not an integer')
+        self.increase_volume(-volume_percent, device_id)
+
     def set_volume(self, volume_percent, device_id=None):
         """
-                Sets device's volume in percentage.
+            Sets device's volume to new percentage.
 
-                Also works with negative numbers.
+            Doesn't throws error if there is no active device.
 
-                :param volume_percent: The volume percentage to set
-
-                :param device_id: The device target
+            :param volume_percent: Volume percentage to set.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
+            :raises TypeError: volume_percent is not an integer.
         """
-        if 0 <= int(volume_percent) <= 100:
+        if not isinstance(volume_percent, int):
+            raise TypeError('volume_percent is not an integer')
+        if volume_percent > 100:
+            volume_percent = 100
+        elif volume_percent < 0:
+            volume_percent = 0
+        try:
             self.sp.volume(int(volume_percent), device_id)
+        except SpotifyException as se:
+            if se.http_status == 403:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            else:
+                raise
+
+    def get_volume(self, device_id=None):
+        """
+            Returns device's volume in percentage.
+
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
+        """
+        if device_id:
+            dev = self._get_device(device_id)
         else:
-            raise AttributeError('Volume must be an Integer between 0 and 100')
+            dev = self._get_active_device()
+        return dev['volume_percent']
 
-    # Search
-    def search_track(self, query, limit=10):
+    # Get info
+
+    def get_current_song_info(self):
         """
-                Search list of tracks that match the query.
+            Gets information about current song.
 
-                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
-
-                :param query: The search query
-
-                :param limit: Number of results to show
-        """
-        tracks = {'tracks': []}
-        for result in self.sp.search(query, limit, type='track')['tracks']['items']:
-            artists_string = ''
-            for artist in result['artists']:
-                artists_string += artist['name'] + ', '
-            tracks['tracks'].append({'name': result['name'], 'artists': artists_string[:-2],
-                                     'album': result['album']['name'], 'uri': result['uri']})
-        return tracks
-
-    def search_artist(self, query, limit=10):
-        """
-                Search list of artists that match the query.
-
-                Result -> {'artists': [{name, uri}, ... ]}
-
-                :param query: The search query
-
-                :param limit: Number of results to show
-        """
-        artists = {'artists': []}
-        for artist in self.sp.search(query, limit, type='artist')['artists']['items']:
-            artists['artists'].append([artist['name'], artist['uri']])
-        return artists
-
-    def search_album(self, query, limit=10):
-        """
-                Search list of albums that match the query.
-
-                Result -> {'albums': [name, artists, uri], ... }
-
-                :param query: The search query
-
-                :param limit: Number of results to show
-        """
-        albums = {'albums': []}
-        for album in self.sp.search(query, limit, type='album')['albums']['items']:
-            artists_string = ''
-            for artist in album['artists']:
-                artists_string += artist['name'] + ', '
-            albums['albums'].append([album['name'], artists_string[:-2], album['uri']])
-        return albums
-
-    def search_playlist(self, query, limit=10):
-        """
-                Search list of playlists that match the query.
-
-                Result -> {'playlists': [name, uri], ... }
-
-                :param query: The search query
-
-                :param limit: Number of results to show
-        """
-        playlists = {'playlists': []}
-        for p in self.sp.search(query, limit, type='playlist')['playlists']['items']:
-            playlists['playlists'].append([p['name'], p['uri']])
-        return playlists
-
-    # Get data
-    def get_current_status(self):
-        """
-
-                Return the status of the current user.
-
-                :return: {username, track: {name, uri}, artists: {all, main, main_uri}, album: {name, uri},
-                           playlist: {is_active, uri}}
-                :rtype: dict
-                :raises ConnectionError: If user is not connected to Spotify
+            :return: Dictionary.
+            :raises ConnectionError: User is not connected to Spotify.
         """
         status = self.sp.currently_playing()
         if not status:
             raise ConnectionError('User not connected to Spotify ')
-        song = status['item']
-        album = song['album']
+        return status['item']
+
+    def get_current_album_info(self):
+        """
+            Gets information about current song's album.
+
+            :return: Dictionary.
+            :raises ConnectionError: User is not connected to Spotify.
+        """
+        return self.get_current_song_info()['album']
+
+    def get_current_song_artist(self):
+
+        """
+            Gets artists from current song.
+
+            :return: String of artists names separated by commas.
+            :raises ConnectionError: User is not connected to Spotify.
+        """
+        artists = self.get_current_song_info()['artists']
         artists_string = ''
-        owners_string = ''
-        main_artist = song['artists'][0]
-        for artist in song['artists']:
+        for artist in artists:
             artists_string += artist['name'] + ', '
-        for artist in album['artists']:
-            owners_string += artist['name'] + ', '
-        playlist_active = False
-        playlist_uri = None
-        if status['context'] and status['context']['type'] == 'playlist':
-            playlist_active = True
-            playlist_uri = status['context']['uri']
-        return {'username': self.sp.current_user()['id'], 'track': {'name': owners_string[:-2] + ' - ' +
-                song['name'], 'uri': song['uri']}, 'artists': {'all': artists_string[:-2],
-                'main': {'name': main_artist['name'], 'uri': main_artist['uri']}}, 'album': {'name': album['name'],
-                'uri': album['uri']}, 'playlist': {'is_active': playlist_active, 'uri': playlist_uri}}
+        return artists_string[:-2]
 
-    def get_playlists(self):
+    def get_current_album_release_date(self):
+
         """
-                Returns list of user playlists
+            Gets release year from current song's album.
 
-                Result -> {'playlists': [name, uri], ... }
+            :return: Release date as a string with format YYYY-MM-DD.
+            :raises ConnectionError: User is not connected to Spotify.
         """
-        playlists = {'playlists': []}
-        for p in self.sp.current_user_playlists()['items']:
-            playlists['playlists'].append([p['name'], p['uri']])
-        return playlists
+        return self.get_current_song_info()['album']['release_date']
 
-    def get_recently_played(self, limit=50):
+    # Streaming
+
+    def play(self, device_id=None):
         """
-                Returns list of tracks recently played by the current user.
+            Starts or resumes device's playback.
 
-                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
+            Doesn't throws error if there is no active device.
 
-                :param limit: Number of results to show
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
         """
-        tracks = {'tracks': []}
-        for item in self.sp.current_user_recently_played(limit)['items']:
-            track = item['track']
-            artists_string = ''
-            for artist in track['artists']:
-                artists_string += artist['name'] + ', '
-            tracks['tracks'].append({'name': track['name'], 'artists': artists_string[:-2],
-                                     'album': track['album']['name'], 'uri': track['uri']})
-        return tracks
+        try:
+            self.sp.start_playback(device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            # Err 403 - Not paused
+            elif se.http_status == 403 and 'Forbidden' in se.msg:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            else:
+                raise
 
-    def get_saved_albums(self, limit=20, offset=0):
-        # returns dict -> {'albums': [name, artists, uri], ... }
-        albums = {'albums': []}
-        for item in self.sp.current_user_saved_albums(limit, offset)['items']:
-            artists_string = ''
-            for artist in item['album']['artists']:
-                artists_string += artist['name'] + ', '
-            albums['albums'].append([item['album']['name'], artists_string[:-2], item['album']['uri']])
-        return albums
-
-    def get_saved_tracks(self, limit=20, offset=0):
+    def pause(self, device_id=None):
         """
-                Returns list of tracks saved by the current user.
+            Pauses device's playback.
 
-                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
+            Doesn't throws error if there is no active device.
 
-                :param limit: Number of results to show
-
-                :param offset: Index of the first item to return
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
         """
-        tracks = {'tracks': []}
-        for track in self.sp.current_user_saved_tracks(limit, offset)['items']:
-            artists_string = ''
-            for artist in track['artists']:
-                artists_string += artist['name'] + ', '
-            tracks['tracks'].append({'name': track['name'], 'artists': artists_string[:-2],
-                                     'album': track['album']['name'], 'uri': track['uri']})
-        return tracks
+        try:
+            self.sp.pause_playback(device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            # Err 403 - Not paused
+            elif se.http_status == 403 and 'Forbidden' in se.msg:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            else:
+                raise
 
-    def get_user_top_artists(self, limit=10):
-        # returns dict -> {'artists': [{name, uri}, ... ]}
-        artists = {'artists': []}
-        for artist in self.sp.current_user_top_artists(limit)['items']:
-            artists['artists'].append({'artists': artist['name'], 'uri': artist['uri']})
-        return artists
-
-    def get_user_top_tracks(self, limit=10):
+    def switch_play_pause(self, device_id=None):
         """
-                Returns list of tracks more played by the current user.
+            Switch between Play and Pause state.
 
-                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
+            Doesn't throws error if there is no active device.
 
-                :param limit: Number of results to show
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
         """
-        tracks = {'tracks': []}
-        for track in self.sp.current_user_top_tracks(limit)['items']:
-            artists_string = ''
-            for artist in track['artists']:
-                artists_string += artist['name'] + ', '
-            tracks['tracks'].append({'name': track['name'], 'artists': artists_string[:-2],
-                                     'album': track['album']['name'], 'uri': track['uri']})
-        return tracks
+        try:
+            self.sp.start_playback(device_id)
+        except SpotifyException as se:
+            # Err 403 - Not paused
+            if se.http_status == 403:
+                if 'Forbidden' not in se.msg:
+                    self.sp.pause_playback(device_id)
+                else:
+                    raise ConnectionError('There is no active device or device_id is not valid.')
+            elif se.http_status == 404:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            else:
+                raise
 
-    def get_artist_top_tracks(self, artist_uri, limit=5):
-        # returns dict -> {'tracks':[{name, artists, album, uri}, ... ]}
-        tracks = {'tracks': []}
-        tracks_found = 0
-        for track in self.sp.artist_top_tracks(artist_uri)['tracks']:
-            tracks['tracks'].append({'name': track['name'], 'artists': self.sp.artist(artist_uri)['uri'],
-                                     'album': track['album']['name'], 'uri': track['uri']})
-            tracks_found += 1
-            if tracks_found >= limit:
-                break
-        return tracks
-
-    def get_related_artist_tracks(self, artist_uri, max_artists=5, tracks_per_artist=5):
+    def next_song(self, device_id=None):
         """
-                Returns list of tracks related to an artist.
+            Moves playback to next song.
 
-                It search the top songs of some related artists.
+            Doesn't throws error if there is no active device.
 
-                Result -> {'tracks':[{name, artists, album, uri}, ... ]}
-
-                :param artist_uri: ID of the artist.
-
-                :param max_artists: Number of related artists to show.
-
-                :param tracks_per_artist: Number of tracks per artist to show.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
         """
-        tracks = {'tracks': []}
-        artists_found = 0
-        for artist in self.sp.artist_related_artists(artist_uri)['artists']:
-            tracks_found = 0
-            for track in self.sp.artist_top_tracks(artist['uri'])['tracks']:
-                tracks['tracks'].append({'name': track['name'], 'artists': artist,
-                                         'album': track['album']['name'], 'uri': track['uri']})
-                tracks_found += 1
-                if tracks_found >= tracks_per_artist:
-                    break
-            artists_found += 1
-            if artists_found >= max_artists:
-                break
+        try:
+            self.sp.next_track(device_id)
+        except SpotifyException as se:
+            if se.http_status == 404 or se.http_status == 403:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            else:
+                raise
 
-        return tracks
-
-    # Set data
-    def save_tracks(self, tracks=None):
+    def previous_song(self, restart_time=0, device_id=None):
         """
-            Saves one or more tracks on the current user's library
+            Moves playback to previous song. If there is no previous the actual one is restarted.
 
-            Tracks is a list similar to [track1.uri, track2.uri, ... ]
+            If song's peek is greater than restart_time, song is moved instead of restarted.
 
-            :param tracks: List of uri's tracks to save
+            Doesn't throws error if there is no active device.
+
+            :param restart_time: Minimum time in seconds to restart song instead of move playback. 0 to disable.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
+            :raises TypeError: volume_percent is not an integer.
         """
-        self.sp.current_user_saved_tracks_add(tracks)
+        if not isinstance(restart_time, int):
+            raise TypeError('restart_time is not an integer')
+        if restart_time != 0 and self.sp.currently_playing()['progress_ms']/1000 > restart_time:
+                self.restart_song(device_id)
+        else:
+            try:
+                self.sp.previous_track(device_id)
+            except SpotifyException as se:
+                # Err 403 - No previous track
+                if se.http_status == 403:
+                    if 'Forbidden' not in se.msg:
+                        self.restart_song(device_id)
+                    else:
+                        raise ConnectionError('There is no active device or device_id is not valid.')
+                elif se.http_status == 404:
+                    raise ConnectionError('There is no active device or device_id is not valid.')
+                else:
+                    raise
 
-    def delete_tracks(self, tracks=None):
+    def restart_song(self, device_id=None):
         """
-            Deletes one or more tracks from the current user's library
+            Restarts current song.
 
-            Tracks is a list similar to [track1.uri, track2.uri, ... ]
+            Doesn't throws error if there is no active device.
 
-            :param tracks: List of uri's tracks to delete
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
         """
-        self.sp.current_user_saved_tracks_delete(tracks)
+        try:
+            self.sp.seek_track(0, device_id)
+        except SpotifyException as se:
+            if se.http_status == 404 or se.http_status == 403:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            else:
+                raise
 
-    def save_albums(self, albums=None):
-        """
-            Saves one or more albums on the current user's library
+    # Repeat & Shuffle
 
-            Tracks is a list similar to [album1.uri, album2.uri, ... ]
+    def get_repeat_state(self):
+        """
+            Gets repeat state.
 
-            :param albums: List of uri's albums to save
+            :return: Repeat state, which can be 'track', 'context' or 'off'.
+            :raises ConnectionError: User is not connected to Spotify.
         """
-        if albums is None:
-            albums = []
-        self.sp.current_user_saved_albums_add(albums)
+        try:
+            return self.sp.current_playback()['repeat_state']
+        except TypeError:
+            raise ConnectionError('User is not connected to Spotify.')
 
-    # Use data
-    def save_current_track(self):
+    def set_repeat_state(self, repeat_state, device_id=None):
         """
-            Saves the track that the current user is playing on it's library
-        """
-        self.save_tracks([self.get_current_status()['track']['uri']])
+            Sets repeat state.
 
-    def delete_current_track(self):
+            Doesn't throws error if there is no active device.
+
+            :param repeat_state: Repeat state, which can be 'track', 'context' or 'off'.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: User is not connected to Spotify.
+            :raises TypeError: Repeat state must be 'track', 'context' or 'off'.
         """
-            Deletes the track that the current user is playing from it's library
+        if repeat_state not in ['track', 'context', 'off']:
+            raise TypeError('repeat_state must be \'track\', \'context\' or \'off\'.')
+        try:
+            self.sp.repeat(repeat_state, device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            else:
+                raise
+
+    def next_repeat_state(self, device_id=None):
         """
-        self.delete_tracks([self.get_current_status()['track']['uri']])
+            Moves repeat state to next state.
+
+            Order is 'track' -> 'context' -> 'off' -> 'track'.
+
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: User is not connected to Spotify.
+        """
+        repeat_state = self.get_repeat_state()
+        if repeat_state == 'track':
+            repeat_state = 'context'
+        elif repeat_state == 'context':
+            repeat_state = 'off'
+        else:
+            repeat_state = 'track'
+        self.set_repeat_state(repeat_state, device_id)
+
+    def get_shuffle_state(self):
+        """
+            Gets shuffle state.
+
+            :return: Repeat state, which can be True or False.
+            :raises ConnectionError: User is not connected to Spotify.
+        """
+        try:
+            return self.sp.current_playback()['shuffle_state']
+        except TypeError:
+            raise ConnectionError('User is not connected to Spotify.')
+
+    def set_shuffle_state(self, shuffle_state, device_id=None):
+        """
+            Sets shuffle state.
+
+            Doesn't throws error if there is no active device.
+
+            :param shuffle_state: Shuffle state, which can be True or False.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: User is not connected to Spotify.
+            :raises TypeError: Shuffle state must be True or False.
+        """
+        if shuffle_state not in [True, False]:
+            raise TypeError('shuffle_state must be True or False.')
+        try:
+            self.sp.shuffle(shuffle_state, device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('There is no active device or device_id is not valid.')
+            else:
+                raise
+
+    def switch_shuffle_state(self, device_id=None):
+        """
+            Switch shuffle state between True and False.
+
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: User is not connected to Spotify.
+        """
+        self.set_shuffle_state(not self.get_shuffle_state(), device_id)
+
+    # Play
+
+    def play_song(self, song_name, device_id=None):
+        """
+            Search song that matches song_name and plays it.
+
+            Doesn't throws error if there is no active device.
+
+            :param song_name: Query to match.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: device_id is not valid.
+            :raises TypeError: There is no search query.
+            :raises IndexError: There is no results.
+        """
+        try:
+            uri = self.sp.search(song_name, 1, type='track')['tracks']['items'][0]['uri']
+            self.sp.start_playback(uris=[uri], device_id=device_id)
+        except SpotifyException as se:
+            if se.http_status == 400 and 'No search query' in se.msg:
+                raise TypeError('There is no search query.')
+            elif se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+        except IndexError:
+            raise IndexError('There is no results.')
+
+    def play_album(self, album_name, device_id=None):
+        """
+            Search album that matches album_name and plays it.
+
+            Doesn't throws error if there is no active device.
+
+            :param album_name: Query to match.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
+            :raises TypeError: There is no search query.
+            :raises IndexError: There is no results.
+        """
+        try:
+            uri = self.sp.search(album_name, 1, type='album')['albums']['items'][0]['uri']
+            self.sp.start_playback(context_uri=uri, device_id=device_id)
+            self.set_shuffle_state(False, device_id)
+        except SpotifyException as se:
+            if se.http_status == 400 and 'No search query' in se.msg:
+                raise TypeError('There is no search query.')
+            elif se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+        except IndexError:
+            raise IndexError('There is no results.')
+
+    def play_artist(self, artist_name, device_id=None):
+        """
+            Search artist that matches song_name and plays it.
+
+            Doesn't throws error if there is no active device.
+
+            :param artist_name: Query to match.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
+            :raises TypeError: There is no search query.
+            :raises IndexError: There is no results.
+        """
+        try:
+            uri = self.sp.search(artist_name, 1, type='artist')['artists']['items'][0]['uri']
+            self.sp.start_playback(context_uri=uri, device_id=device_id)
+        except SpotifyException as se:
+            if se.http_status == 400 and 'No search query' in se.msg:
+                raise TypeError('There is no search query.')
+            elif se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+        except IndexError:
+            raise IndexError('There is no results.')
+
+    def play_genre(self, genre_name, limit=20, device_id=None):
+        """
+            Search genre that matches genre_name and plays it.
+
+            Doesn't throws error if there is no active device.
+
+            :param genre_name: Query to match.
+            :param limit: Number of songs to search and play.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid.
+            :raises TypeError: genre_name is not valid. Also limit is not an integer.
+        """
+        if not isinstance(limit, int):
+                raise TypeError('limit must be an integer.')
+        try:
+            results = self.sp.recommendations(seed_genres=[genre_name], limit=limit)['tracks']
+            if not results:
+                raise TypeError('genre_name must be in ' + str(self.sp.recommendation_genre_seeds()['genres']))
+            else:
+                uris = []
+                for track in results:
+                    uris.append(track['uri'])
+                self.sp.start_playback(uris=uris, device_id=device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+
+    def play_playlist(self, playlist_name, device_id=None):
+        """
+            Search playlist that matches playlist_name and plays it.
+
+            Doesn't throws error if there is no active device.
+
+            :param playlist_name: Query to match.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: device_id is not valid.
+            :raises TypeError: There is no search query.
+            :raises IndexError: There is no results.
+        """
+        try:
+            uri = self.sp.search(playlist_name, 1, type='playlist')['playlists']['items'][0]['uri']
+            self.sp.start_playback(context_uri=uri, device_id=device_id)
+        except SpotifyException as se:
+            if se.http_status == 400 and 'No search query' in se.msg:
+                raise TypeError('There is no search query.')
+            elif se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+        except IndexError:
+            raise IndexError('There is no results.')
+
+    def play_similar_from_current_artist(self, limit=20, device_id=None):
+        """
+            Search songs from similar artists of the current one and play them.
+
+            :param limit: Number of songs to search and play.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid. Also User is
+                                     not connected to Spotify.
+            :raises TypeError: limit is not an integer.
+        """
+        if not isinstance(limit, int):
+                raise TypeError('limit must be an integer.')
+        try:
+            artists, uris = [], []
+            for artist in self.get_current_song_info()['artists']:
+                artists.append(artist['uri'])
+            for track in self.sp.recommendations(seed_artists=artists, limit=limit)['tracks']:
+                uris.append(track['uri'])
+            self.sp.start_playback(uris=uris, device_id=device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+
+    def play_similar_from_current_track(self, limit=20, device_id=None):
+        """
+            Search songs similar to the current one and play them.
+
+            :param limit: Number of songs to search and play.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid. Also User is
+                                     not connected to Spotify.
+            :raises TypeError: limit is not an integer.
+        """
+        if not isinstance(limit, int):
+            raise TypeError('limit must be an integer.')
+        try:
+            song_uri = self.get_current_song_info()['uri']
+            uris = []
+            for track in self.sp.recommendations(seed_tracks=[song_uri], limit=limit)['tracks']:
+                uris.append(track['uri'])
+            self.sp.start_playback(uris=uris, device_id=device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+
+    def play_recently_played(self, limit=50, device_id=None):
+        """
+            Search songs that user played recently.
+
+            :param limit: Number of songs to search and play.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid. Also User is
+                                     not connected to Spotify.
+            :raises TypeError: limit is not an integer.
+        """
+        if not isinstance(limit, int):
+            raise TypeError('limit must be an integer.')
+        try:
+            uris = []
+            for track in self.sp.current_user_recently_played(limit)['items']:
+                uris.append(track['track']['uri'])
+            self.sp.start_playback(uris=uris, device_id=device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+
+    def play_top_tracks(self, limit=20, device_id=None):
+        """
+            Search songs that user plays the most and plays them.
+
+            :param limit: Number of songs to search and play.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid. Also User is
+                                     not connected to Spotify.
+            :raises TypeError: limit or offset are not an integer.
+        """
+        if not isinstance(limit, int):
+            raise TypeError('limit must be an integer.')
+        try:
+            uris = []
+            for track in self.sp.current_user_top_tracks(limit)['items']:
+                uris.append(track['uri'])
+            self.sp.start_playback(uris=uris, device_id=device_id)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+
+    def play_top_artists(self, limit=5, device_id=None):
+        """
+            Search top songs from artists that user plays the most and plays them.
+
+            :param limit: Number of artists to analyze.
+            :param device_id: Device target, if it's not set, target is current device.
+            :raises ConnectionError: There is no active device or device_id is not valid. Also User is
+                                     not connected to Spotify.
+            :raises TypeError: limit or offset are not an integer.
+        """
+        if not isinstance(limit, int):
+            raise TypeError('limit must be an integer.')
+        try:
+            uris = []
+            for artist in self.sp.current_user_top_artists(limit)['items']:
+                for track in self.sp.artist_top_tracks(artist['uri'])['tracks']:
+                    uris.append(track['uri'])
+            self.sp.start_playback(uris=uris, device_id=device_id)
+            self.set_shuffle_state(True)
+        except SpotifyException as se:
+            if se.http_status == 404:
+                raise ConnectionError('device_id is not valid.')
+            else:
+                raise
+
+    # Save & Delete
+
+    def save_current_song(self):
+        """
+        Saves current song on user's library.
+
+        :raises ConnectionError: User is not connected to Spotify
+        """
+        self.sp.current_user_saved_tracks_add([self.get_current_song_info()['uri']])
+
+    def delete_current_song(self):
+        """
+        Deletes current song from user's library.
+
+        :raises ConnectionError: User is not connected to Spotify
+        """
+        self.sp.current_user_saved_tracks_delete([self.get_current_song_info()['uri']])
 
     def save_current_album(self):
         """
-            Saves the album that the current user is playing on it's library
+        Saves current album on user's library.
+
+        :raises ConnectionError: User is not connected to Spotify
         """
-        self.save_albums([self.get_current_status()['album']['uri']])
+        self.sp.current_user_saved_albums_add([self.get_current_album_info()['uri']])
 
-    def play_user_top_artists(self, artists=10, tracks_per_artists=5, shuffle=True, device_id=None):
-        self.pause(device_id)
-        tracks = []
-        for artist in self.get_user_top_artists(artists)['artists']:
-            for track in self.get_artist_top_tracks(artist['uri'], tracks_per_artists)['tracks']:
-                tracks.append(track['uri'])
-        self.play(uris=tracks, device_id=device_id)
-        self.set_shuffle(shuffle)
-
-    def play_user_top_tracks(self, limit=10, shuffle=True, device_id=None):
-        self.pause(device_id)
-        tracks = []
-        for track in self.get_user_top_tracks(limit)['tracks']:
-            tracks.append(track['uri'])
-        self.play(uris=tracks, device_id=device_id)
-        self.set_shuffle(shuffle)
-
-    def play_recently_played(self, limit=50, shuffle=True, device_id=None):
-        self.pause(device_id)
-        tracks = []
-        for track in self.get_recently_played(limit)['tracks']:
-            tracks.append(track['uri'])
-        self.play(uris=tracks, device_id=device_id)
-        self.set_shuffle(shuffle)
-
-    def play_current_artist_related_tracks(self, max_artists=5, tracks_per_artist=5, shuffle=True, device_id=None):
-        self.pause(device_id)
-        artist_uri = self.get_current_status()['artists']['main']['uri']
-        tracks = []
-        for track in self.get_related_artist_tracks(artist_uri, max_artists, tracks_per_artist)['tracks']:
-            tracks.append(track['uri'])
-        self.play(uris=tracks, device_id=device_id)
-        self.set_shuffle(shuffle)
-
-    # Devices
-    def get_available_devices(self):
+    def delete_current_album(self):
         """
-                Returns a dict of all the devices available of the current user.
+        Saves current album on user's library.
 
-                Result -> {'devices': [{name, id}, ... ]}
+        :raises ConnectionError: User is not connected to Spotify
+        """
+        uris = []
+        for track in self.sp.album_tracks(self.get_current_album_info()['uri'])['items']:
+            uris.append(track['uri'])
+        self.sp.current_user_saved_tracks_delete(uris)
+
+    def _get_available_devices(self):
+        """
+            Returns a dict of all the devices available of the current user.
+
+            :return {'devices': [{name, id}, ... ]}
         """
         devices = {'devices': []}
         for dev in self.sp.devices()['devices']:
             devices['devices'].append([dev['name'].capitalize(), dev['id']])
         return devices
 
-    def get_active_device(self):
+    def _get_active_device(self):
         """
-                Returns device dict (see Spotipy docs) from the active device.
+            Returns device dict from the active device.
+
+            :return: {id, is_active, is_restricted, name, type, volume_percent}
+            :raises ConnectionError: There is no active device.
         """
         for dev in self.sp.devices()['devices']:
             if dev['is_active']:
                 return dev
+        raise ConnectionError('There is no active device')
 
-    def get_device(self, device_id):
+    def _get_device(self, device_id):
         """
-                Returns device dict (see Spotipy docs) from a device ID.
+            Returns device dict from a device ID.
 
-                :param device_id: The device target identifier
+            :param device_id: Device target identifier
+            :return: {id, is_active, is_restricted, name, type, volume_percent}
+            :raises ConnectionError: There is no active device that match target ID.
         """
         for dev in self.sp.devices()['devices']:
             if dev['id'] == device_id:
                 return dev
+        raise ConnectionError('There is no active device that match target ID')
