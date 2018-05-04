@@ -40,24 +40,18 @@ from spotify_manager import SpotifyManager
 sm = SpotifyManager(SPOTIFY_USERNAME, SPOTIFY_CLIENT_ID, 
                                     SPOTIFY_CLIENT_SECRET, SPOTIFY_REDIRECT_URI)
 
-results = sm.search_track('eminem mockingbird')
-print(results)
->>> {'tracks': [{'name': 'Mockingbird', 'artists': 'Eminem', 'album': 'Curtain Call (Deluxe)', 
-                'uri': 'spotify:track:17baAghWcrewNOcc9dCewx'}, ... ]}
-
-sm.play(uris=[results['tracks'][0]['uri']])
+sm.play_song('eminem mockingbird')
 # Mockingbird - Eminem is now running on your device
 
-current_status = sm.get_current_status()
-print(current_status)
->>> {'username': 'yourspotifyaccount', 'song': {'name': 'Eminem - Mockingbird', 
-        'uri': 'spotify:track:17baAghWcrewNOcc9dCewx'}, 'artists': {'all': 'Eminem', 'main': 
-        {'name': 'Eminem', 'uri': 'spotify:artist:7dGJo4pcD2V6oG8kP0tJRR'}}, 'album': {'name': 
-        'Curtain Call (Deluxe)', 'uri': 'spotify:album:71xFWYFtiHC8eP99QB30AA'}, 'playlist': 
-        {'is_active': False, 'uri': None}}
+print(sm.get_current_song_info())
+>>> {'name': 'Eminem - Mockingbird', 'uri': 'spotify:track:17baAghWcrewNOcc9dCewx'}, 
+    'artists': {'all': 'Eminem', 'main': {'name': 'Eminem', 
+    'uri': 'spotify:artist:7dGJo4pcD2V6oG8kP0tJRR'}}, 'album': {'name': 
+    'Curtain Call (Deluxe)', 'uri': 'spotify:album:71xFWYFtiHC8eP99QB30AA'}, 
+    'playlist': {'is_active': False, 'uri': None}}
 
-sm.play_current_artist_related_tracks()
-# My Band - D12 is now running on your device, followed by a list of another 49 related songs (customizable)
+sm.play_similar_from_current_artist()
+# My Band - D12 is now running on your device, followed by a list of another 19 related songs (customizable)
 ```
 
 ## Documentation
@@ -70,5 +64,7 @@ If you have suggestions, bugs or other issues specific to this library, file the
 
 ## Version
 
-- 1.0 - 17/03/2018 - Initial release
-- 1.1 - 27/03/2018 - Added some new methods and revised the old ones
+- 1.0 - 17/03/2018 - Initial release.
+- 1.1 - 27/03/2018 - Added some new methods and revised the old ones.
+- 1.2 - 20/03/2018 - Added some new methods and revised the old ones.
+- 1.3 - 4/05/2018 - All methods are redone, increasing transparency level. 

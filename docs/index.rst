@@ -22,8 +22,7 @@ like for example 'Mockingbird' by 'Eminem'::
     from spotify_manager import SpotifyManager
 
     sm = SpotifyManager(username, client_id, client_secret, redirect_uri)
-    results = sm.search_track('eminem mockingbird')
-    sm.play(uris=[results['tracks'][0]['uri']])
+    sm.play_song('eminem mockingbird')
 
 Here's another example showing how to play songs related to the artist you
 are listening to right now::
@@ -31,7 +30,7 @@ are listening to right now::
     from spotify_manager import SpotifyManager
 
     sm = SpotifyManager(username, client_id, client_secret, redirect_uri)
-    sm.play_current_artist_related_tracks()
+    sm.play_similar_from_current_artist()
 
 Finally, here's an example of increasing the volume of the device you are
 listening to right now a twenty percent::
