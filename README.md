@@ -1,10 +1,10 @@
-# SPOTIFY-MANAGER (ON WORK)
+# SPOTIFY-MANAGER
 
 ## Description
 
 spotify-manager is a Python 3 library wrote to simplify the basic usage of Spotipy
 
-## Installation
+## Installation (On work)
 
 If you already have [Python3](http://www.python.org/) on your system you can install the library simply by downloading the distribution, unpack it and install in the usual fashion:
 
