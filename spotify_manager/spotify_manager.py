@@ -55,7 +55,7 @@ class SpotifyManager:
         """
             Sets device's volume to new percentage.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param volume_percent: Volume percentage to set.
             :param device_id: Device target, if it's not set, target is current device.
@@ -142,7 +142,7 @@ class SpotifyManager:
         """
             Starts or resumes device's playback.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param device_id: Device target, if it's not set, target is current device.
             :raises ConnectionError: There is no active device or device_id is not valid.
@@ -162,7 +162,7 @@ class SpotifyManager:
         """
             Pauses device's playback.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param device_id: Device target, if it's not set, target is current device.
             :raises ConnectionError: There is no active device or device_id is not valid.
@@ -182,7 +182,7 @@ class SpotifyManager:
         """
             Switch between Play and Pause state.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param device_id: Device target, if it's not set, target is current device.
             :raises ConnectionError: There is no active device or device_id is not valid.
@@ -205,7 +205,7 @@ class SpotifyManager:
         """
             Moves playback to next song.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param device_id: Device target, if it's not set, target is current device.
             :raises ConnectionError: There is no active device or device_id is not valid.
@@ -224,7 +224,7 @@ class SpotifyManager:
 
             If song's peek is greater than restart_time, song is moved instead of restarted.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param restart_time: Minimum time in seconds to restart song instead of move playback. 0 to disable.
             :param device_id: Device target, if it's not set, target is current device.
@@ -254,7 +254,7 @@ class SpotifyManager:
         """
             Restarts current song.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param device_id: Device target, if it's not set, target is current device.
             :raises ConnectionError: There is no active device or device_id is not valid.
@@ -285,7 +285,7 @@ class SpotifyManager:
         """
             Sets repeat state.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param repeat_state: Repeat state, which can be 'track', 'context' or 'off'.
             :param device_id: Device target, if it's not set, target is current device.
@@ -336,7 +336,7 @@ class SpotifyManager:
         """
             Sets shuffle state.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param shuffle_state: Shuffle state, which can be True or False.
             :param device_id: Device target, if it's not set, target is current device.
@@ -368,7 +368,7 @@ class SpotifyManager:
         """
             Search song that matches song_name and plays it.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param song_name: Query to match.
             :param device_id: Device target, if it's not set, target is current device.
@@ -393,7 +393,7 @@ class SpotifyManager:
         """
             Search album that matches album_name and plays it.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param album_name: Query to match.
             :param device_id: Device target, if it's not set, target is current device.
@@ -419,7 +419,7 @@ class SpotifyManager:
         """
             Search artist that matches song_name and plays it.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param artist_name: Query to match.
             :param device_id: Device target, if it's not set, target is current device.
@@ -444,7 +444,7 @@ class SpotifyManager:
         """
             Search genre that matches genre_name and plays it.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param genre_name: Query to match.
             :param limit: Number of songs to search and play.
@@ -473,7 +473,7 @@ class SpotifyManager:
         """
             Search playlist that matches playlist_name and plays it.
 
-            Doesn't throw error if there is no active device.
+            Doesn't throw an error if there is no active device.
 
             :param playlist_name: Query to match.
             :param device_id: Device target, if it's not set, target is current device.
