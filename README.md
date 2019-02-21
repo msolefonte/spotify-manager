@@ -60,7 +60,7 @@ https://spotify-manager.readthedocs.io/en/latest/
 
 ## Reporting Issues
 
-If you have suggestions, bugs or other issues specific to this library, file them [here](https://github.com/WolfyLPDC/spotify-manager/issues). Or just send me a pull request.
+If you have suggestions, bugs or other issues specific to this library, file them [here](https://github.com/msolefonte/spotify-manager/issues). Or just send me a pull request.
 
 ## Version
 
