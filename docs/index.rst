@@ -67,7 +67,7 @@ Or with::
 
     easy_install spotify-manager
 
-Or you can get the source from github at https://github.com/WolfyLPDC/spotify-manager
+Or you can get the source from github at https://github.com/msolefonte/spotify-manager
 
 Authorized requests
 ===================
@@ -91,18 +91,18 @@ API Reference
 Support
 =======
 If you any have questions about spotify-manager, you can mail me to my account
-*'marcsole @ insomniacwolves.com'* and I will try to answer as soon as possible.
+*'msolefonte @ gmail.com'* and I will try to answer as soon as possible.
 
 If you think you've found a bug, let me know at
-`spotify-manager <https://github.com/WolfyLPDC/spotify-manager/issues>`_
+`spotify-manager <https://github.com/msolefonte/spotify-manager/issues>`_
 
 
 Contribute
 ==========
-spotify-manager authored by Marc Solé (`WolfyLPDC <https://github.com/WolfyLPDC/>`_)
+spotify-manager authored by Marc Solé (`msolefonte <https://github.com/msolefonte/>`_)
 with special thanks to Paul Lamere (`plamere <https://github.com/plamere/>`_),
 the author of the great library Spotipy, and to all the people that have contributed to make this possible.
 
 License
 =======
-https://github.com/WolfyLPDC/spotify-manager/blob/master/LICENSE
+https://github.com/msolefonte/spotify-manager/blob/master/LICENSE
